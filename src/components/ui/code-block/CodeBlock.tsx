@@ -45,6 +45,7 @@ export const CodeBlock = ({
   const [isOpen, setIsOpen] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("TypeScript (.tsx)");
   const [sourceCode, setSourceCode] = useState(resolvedCode);
+  const [originalTsSource, setOriginalTsSource] = useState(resolvedCode);
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(
     // only show spinner when we need to fetch from registry
@@ -57,6 +58,7 @@ export const CodeBlock = ({
     // If code came from snippetKey or direct prop, nothing to fetch
     if (resolvedCode) {
       setSourceCode(resolvedCode);
+      setOriginalTsSource(resolvedCode);
       setLoading(false);
       return;
     }
@@ -73,6 +75,7 @@ export const CodeBlock = ({
           if (loader) {
             const result = await loader();
             setSourceCode(result.default);
+            setOriginalTsSource(result.default);
           }
         } finally {
           setLoading(false);
@@ -97,22 +100,10 @@ export const CodeBlock = ({
     setSelectedLanguage(languageName);
     setIsOpen(false);
 
-    if (languageName === "JavaScript (.jsx)" && sourceCode) {
-      setSourceCode(await convertTsxToJsx(sourceCode));
+    if (languageName === "JavaScript (.jsx)" && originalTsSource) {
+      setSourceCode(await convertTsxToJsx(originalTsSource));
     } else {
-      // Restore original TS source
-      if (resolvedCode) {
-        setSourceCode(resolvedCode);
-      } else if (componentName && fileName) {
-        const matched = Index[componentName]?.othersCode?.find(
-          (o) => o.fileName === fileName,
-        );
-        const loader = matched?.code || Index[componentName]?.code;
-        if (loader) {
-          const result = await loader();
-          setSourceCode(result.default);
-        }
-      }
+      setSourceCode(originalTsSource);
     }
   };
 
