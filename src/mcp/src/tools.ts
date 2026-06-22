@@ -1,6 +1,7 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 
+import { componentInstaller } from "./component-installer.js";
 import { registryService } from "./registry-service.js";
 import { createErrorResponse, createTextResponse } from "./responses.js";
 
@@ -67,7 +68,42 @@ const getRegistryItemSchema = {
   includeSource: z
     .boolean()
     .optional()
-    .describe("Include file contents. Leave this off unless you really need the code."),
+    .describe(
+      "Include file contents. Leave this off unless you really need the code.",
+    ),
+};
+
+const installRegistryItemSchema = {
+  name: z
+    .string()
+    .min(1)
+    .describe("Exact Nurui registry item name, for example gradient-button."),
+  projectPath: z
+    .string()
+    .min(1)
+    .describe(
+      "Absolute path to the project where the component should be installed.",
+    ),
+  language: z
+    .enum(["ts", "js"])
+    .optional()
+    .describe("Target language for component files. Defaults to ts."),
+  installDependencies: z
+    .boolean()
+    .optional()
+    .describe(
+      "Install npm dependencies after writing files. Defaults to false.",
+    ),
+  overwrite: z
+    .boolean()
+    .optional()
+    .describe("Overwrite existing component files. Defaults to false."),
+  dryRun: z
+    .boolean()
+    .optional()
+    .describe(
+      "Return planned changes without writing files. Defaults to false.",
+    ),
 };
 
 export function registerTools(server: McpServer): void {
@@ -80,9 +116,14 @@ export function registerTools(server: McpServer): void {
     },
     async (args) => {
       try {
-        return createTextResponse(await registryService.listRegistryItems(args));
+        return createTextResponse(
+          await registryService.listRegistryItems(args),
+        );
       } catch (error) {
-        return createErrorResponse("Failed to list Nurui registry items.", error);
+        return createErrorResponse(
+          "Failed to list Nurui registry items.",
+          error,
+        );
       }
     },
   );
@@ -96,9 +137,14 @@ export function registerTools(server: McpServer): void {
     },
     async (args) => {
       try {
-        return createTextResponse(await registryService.searchRegistryItems(args));
+        return createTextResponse(
+          await registryService.searchRegistryItems(args),
+        );
       } catch (error) {
-        return createErrorResponse("Failed to search Nurui registry items.", error);
+        return createErrorResponse(
+          "Failed to search Nurui registry items.",
+          error,
+        );
       }
     },
   );
@@ -120,6 +166,27 @@ export function registerTools(server: McpServer): void {
       } catch (error) {
         return createErrorResponse(
           `Failed to fetch Nurui registry item "${args.name}".`,
+          error,
+        );
+      }
+    },
+  );
+
+  server.registerTool(
+    "installRegistryItem",
+    {
+      description:
+        "Install a Nurui registry item into a local project using the same file layout as the CLI.",
+      inputSchema: installRegistryItemSchema,
+    },
+    async (args) => {
+      try {
+        return createTextResponse(
+          await componentInstaller.installComponent(args),
+        );
+      } catch (error) {
+        return createErrorResponse(
+          `Failed to install Nurui registry item "${args.name}".`,
           error,
         );
       }

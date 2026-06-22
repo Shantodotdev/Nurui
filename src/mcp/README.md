@@ -63,6 +63,19 @@ Parameters:
 - `name`: required registry item name, for example `gradient-button`
 - `includeSource`: optional boolean, defaults to `false`
 
+### `installRegistryItem`
+
+Installs one registry item into a local project using the same file layout as the Nurui CLI.
+
+Parameters:
+
+- `name`: required registry item name, for example `gradient-button`
+- `projectPath`: absolute path to the target project
+- `language`: optional target language, `ts` or `js`, defaults to `ts`
+- `installDependencies`: optional boolean, defaults to `true`
+- `overwrite`: optional boolean, defaults to `false`
+- `dryRun`: optional boolean, defaults to `false`
+
 ## Development
 
 ```bash
