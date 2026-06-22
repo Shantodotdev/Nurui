@@ -1,4 +1,5 @@
-const DEFAULT_BASE_URL = "https://nurui.vercel.app";
+const REGISTRY_BASE_URL = "https://nurui.vercel.app";
+const REGISTRY_INDEX_URL = `${REGISTRY_BASE_URL}/r/registry.json`;
 const DEFAULT_LIMIT = 25;
 const MAX_LIMIT = 150;
 
@@ -210,17 +211,9 @@ export function toRegistryItemDetail(
  */
 export function createRegistryService(options: RegistryServiceOptions = {}) {
   // `baseUrl` drives docs and per-item JSON URLs.
-  // `indexUrl` stays overridable for tests and alternate feeds.
-  const baseUrl = trimTrailingSlash(
-    options.baseUrl ??
-      process.env.NURUI_REGISTRY_BASE_URL ??
-      process.env.NURUI_BASE_URL ??
-      DEFAULT_BASE_URL,
-  );
-  const indexUrl =
-    options.indexUrl ??
-    process.env.NURUI_REGISTRY_INDEX_URL ??
-    `${baseUrl}/r/registry.json`;
+  // `indexUrl` stays overridable for tests.
+  const baseUrl = trimTrailingSlash(options.baseUrl ?? REGISTRY_BASE_URL);
+  const indexUrl = options.indexUrl ?? REGISTRY_INDEX_URL;
   const fetchImpl = options.fetch ?? fetch;
 
   let registryPromise: Promise<Registry> | undefined;
