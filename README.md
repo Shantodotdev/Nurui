@@ -14,6 +14,20 @@
 
 Visit https://nurui.vercel.app/docs/installation to view the documentation.
 
+## MCP Server
+
+Nurui includes a Model Context Protocol server for AI editors and agents that need to search the component registry or fetch install-ready component source.
+
+Package source: [`src/mcp`](src/mcp)
+
+Local development:
+
+```bash
+cd src/mcp
+npm install
+npm test
+```
+
 ## 🚀 Quick Start
 
 ### Option 1: Using Docker (Recommended for Production)
