@@ -5,6 +5,7 @@ import { getMDXComponents } from "../../../../../mdx-components";
 import { Metadata } from "next";
 import remarkGfm from "remark-gfm";
 import CopyPage from "@/components/ui/CopyButton";
+import { notFound } from "next/navigation";
 
 interface AsyncParams {
   params: Promise<{ slug: string }>;
@@ -21,6 +22,12 @@ export async function generateMetadata({
   params,
 }: AsyncParams): Promise<Metadata> {
   const { slug } = await params;
+
+  // Whitelist validation: only allow alphanumeric, hyphens, and underscores to prevent path traversal
+  if (!/^[a-zA-Z0-9_-]+$/.test(slug)) {
+    notFound();
+  }
+
   const filePath = path.join(
     process.cwd(),
     "src",
@@ -86,6 +93,12 @@ export async function generateStaticParams() {
 
 const Page = async ({ params }: AsyncParams) => {
   const { slug } = await params;
+
+  // Whitelist validation: only allow alphanumeric, hyphens, and underscores to prevent path traversal
+  if (!/^[a-zA-Z0-9_-]+$/.test(slug)) {
+    notFound();
+  }
+
   const filePath = path.join(
     process.cwd(),
     "src",
