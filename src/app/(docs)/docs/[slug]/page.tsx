@@ -36,7 +36,15 @@ export async function generateMetadata({
     `${slug}.mdx`,
   );
 
-  const content = await fs.readFile(filePath, "utf-8");
+  let content: string;
+  try {
+    content = await fs.readFile(filePath, "utf-8");
+  } catch (error: any) {
+    if (error.code === "ENOENT") {
+      notFound();
+    }
+    throw error;
+  }
 
   const { frontmatter } = await compileMDX<Frontmatter>({
     source: content,
@@ -106,7 +114,15 @@ const Page = async ({ params }: AsyncParams) => {
     "docs",
     `${slug}.mdx`,
   );
-  const rawMDX = await fs.readFile(filePath, "utf-8");
+  let rawMDX: string;
+  try {
+    rawMDX = await fs.readFile(filePath, "utf-8");
+  } catch (error: any) {
+    if (error.code === "ENOENT") {
+      notFound();
+    }
+    throw error;
+  }
   const { content } = await compileMDX<Frontmatter>({
     source: rawMDX,
     options: {
