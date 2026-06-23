@@ -39,8 +39,13 @@ export async function generateMetadata({
   let content: string;
   try {
     content = await fs.readFile(filePath, "utf-8");
-  } catch (error: any) {
-    if (error.code === "ENOENT") {
+  } catch (error) {
+    if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      error.code === "ENOENT"
+    ) {
       notFound();
     }
     throw error;
@@ -117,8 +122,13 @@ const Page = async ({ params }: AsyncParams) => {
   let rawMDX: string;
   try {
     rawMDX = await fs.readFile(filePath, "utf-8");
-  } catch (error: any) {
-    if (error.code === "ENOENT") {
+  } catch (error) {
+    if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      error.code === "ENOENT"
+    ) {
       notFound();
     }
     throw error;
